@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MealSwap | Share a meal, save a meal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-icon">M</span> MealSwap</a>
+    <nav>
+      <a href="#marketplace">Marketplace</a>
+      <a href="#list-meal">Sell a meal</a>
+      <a href="#my-bookings">My bookings</a>
+    </nav>
+    <div id="account-area" class="account-area">
+      <button class="button button-light" onclick="showAuth('login')">Log in</button>
+      <button class="button button-primary" onclick="showAuth('register')">Sign up</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">A smarter campus food community</span>
+        <h1>Your unused meal.<br><span>Someone else's happy meal.</span></h1>
+        <p>List a meal you cannot use, or find an affordable meal from another student. Simple, quick and verified at the mess counter.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#marketplace">Explore meals</a>
+          <a class="button button-outline" href="#list-meal">List your meal</a>
+        </div>
+        <div class="trust-line"><span>✓</span> One booking · One QR · One-time verification</div>
+      </div>
+      <div class="hero-art">
+        <div class="food-card">
+          <div class="food-emoji">🍛</div>
+          <div><strong>Today's meal</strong><p>Freshly listed by a student</p></div>
+          <span class="price-tag">₹35</span>
+        </div>
+        <div class="floating-note">♻️ Less food waste, more value</div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div><strong>01</strong><span>Find a meal</span></div>
+      <div><strong>02</strong><span>Book securely</span></div>
+      <div><strong>03</strong><span>Show your QR</span></div>
+      <div><strong>04</strong><span>Enjoy your food</span></div>
+    </section>
+
+    <section class="section" id="marketplace">
+      <div class="section-heading">
+        <div><span class="eyebrow">THE MARKETPLACE</span><h2>Available meals</h2><p>Browse meals shared by students on your campus.</p></div>
+        <button class="button button-outline" onclick="loadMeals()">↻ Refresh</button>
+      </div>
+      <div id="meal-list" class="meal-grid"><div class="empty-state">Loading meals...</div></div>
+    </section>
+
+    <section class="section split-section" id="list-meal">
+      <div class="section-intro"><span class="eyebrow">HAVE AN EXTRA MEAL?</span><h2>Turn your unused meal into value.</h2><p>Tell other students what you have available. Once another student books it, they receive a unique QR code for mess verification.</p><div class="small-points"><span>✓ You choose the price</span><span>✓ No paper token exchange</span><span>✓ QR verified at the counter</span></div></div>
+      <form id="meal-form" class="panel form-grid">
+        <h3>List a meal</h3>
+        <label>Meal name<input name="title" placeholder="Example: Today's lunch" required></label>
+        <div class="two-fields">
+          <label>Meal type<select name="meal_type" required><option value="">Choose</option><option>Breakfast</option><option>Lunch</option><option>Snacks</option><option>Dinner</option></select></label>
+          <label>Price (₹)<input name="price" type="number" min="1" max="1000" placeholder="35" required></label>
+        </div>
+        <div class="two-fields">
+          <label>Date<input name="date" type="date" required></label>
+          <label>Time<input name="time" type="time" required></label>
+        </div>
+        <label>Mess / pickup location<input name="location" placeholder="Example: Block A Mess" required></label>
+        <label>Extra details <span class="optional">(optional)</span><textarea name="description" rows="3" placeholder="Any useful details..."></textarea></label>
+        <button class="button button-primary button-full" type="submit">Publish meal</button>
+        <p class="form-note">You need to log in as a student before listing a meal.</p>
+      </form>
+    </section>
+
+    <section class="section bookings-section" id="my-bookings">
+      <div class="section-heading"><div><span class="eyebrow">YOUR ACTIVITY</span><h2>My bookings</h2><p>See meals you booked or listed.</p></div><button class="button button-outline" onclick="loadBookings()">↻ Refresh</button></div>
+      <div id="booking-list" class="booking-list"><div class="empty-state">Log in to view your bookings.</div></div>
+    </section>
+
+    <section id="admin-section" class="section admin-section hidden">
+      <div class="section-heading"><div><span class="eyebrow">MESS COUNTER</span><h2>Verify a meal QR</h2><p>Only mess staff accounts can redeem a meal.</p></div></div>
+      <div class="admin-panel panel">
+        <div>
+          <label>QR token<input id="qr-token" placeholder="Paste scanned QR token here"></label>
+          <button class="button button-primary button-full" onclick="redeemToken()">Verify and redeem</button>
+          <div id="scan-result" class="notice hidden"></div>
+        </div>
+        <div class="scanner-box"><div id="reader"></div><button class="button button-outline button-full" onclick="startScanner()">Use camera scanner</button><p class="form-note">Camera access works on localhost or an HTTPS website.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="#"><span class="brand-icon">M</span> MealSwap</a><p>Share food. Save money. Reduce waste.</p><small>Campus pilot platform · Follow your mess's rules for meal transfers.</small></footer>
+
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeAuth()"></div>
+    <div class="modal-card">
+      <button class="close-button" onclick="closeAuth()">×</button>
+      <span class="eyebrow">WELCOME TO MEALSWAP</span><h2 id="auth-title">Log in</h2>
+      <form id="auth-form">
+        <label id="name-field" class="hidden">Your name<input name="name" placeholder="Full name"></label>
+        <label>Email address<input name="email" type="email" placeholder="you@college.edu" required></label>
+        <label>Password<input name="password" type="password" minlength="8" placeholder="At least 8 characters" required></label>
+        <button id="auth-submit" class="button button-primary button-full" type="submit">Log in</button>
+      </form>
+      <p id="auth-switch" class="switch-text">New here? <button onclick="showAuth('register')">Create an account</button></p>
+      <p class="form-note">Student accounts are created here. Mess staff accounts must be set up by the website operator.</p>
+    </div>
+  </div>
+
+  <div id="qr-modal" class="modal hidden">
+    <div class="modal-backdrop" onclick="closeQr()"></div>
+    <div class="modal-card qr-card"><button class="close-button" onclick="closeQr()">×</button><span class="eyebrow">YOUR MEAL PASS</span><h2>Show this QR at the counter</h2><img id="qr-image" alt="Meal booking QR code"><p id="qr-status" class="form-note">Keep this code private. It can be used only once.</p><button class="button button-outline button-full" onclick="closeQr()">Done</button></div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="app.js"></script>
+</body>
+</html>
